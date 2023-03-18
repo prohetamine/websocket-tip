@@ -1,0 +1,20 @@
+{
+  "name": "http-tip",
+  "version": "3.0.2",
+  "description": "",
+  "main": "index.js",
+  "size": 1,
+  "scripts": {
+    "dev": "node index.js demo http-tip 6969 1 development"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.2.6",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^11.1.0",
+    "node-mermaid": "*",
+    "path": "^0.12.7",
+    "sleep-promise": "^9.1.0"
+  }
+}
