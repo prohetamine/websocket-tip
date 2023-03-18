@@ -1,11 +1,11 @@
 {
-  "name": "http-tip",
+  "name": "websocket-tip",
   "version": "3.0.2",
   "description": "",
   "main": "index.js",
   "size": 1,
   "scripts": {
-    "dev": "node index.js demo http-tip 6969 1 development"
+    "dev": "node index.js demo webscoket-tip 6969 1 development"
   },
   "author": "",
   "license": "ISC",
@@ -13,8 +13,10 @@
     "axios": "^1.2.6",
     "fs": "^0.0.1-security",
     "fs-extra": "^11.1.0",
+    "http": "^0.0.1-security",
     "node-mermaid": "*",
     "path": "^0.12.7",
-    "sleep-promise": "^9.1.0"
+    "sleep-promise": "^9.1.0",
+    "websocket": "^1.0.34"
   }
 }

@@ -9,10 +9,54 @@ const AppChannel            = require('node-mermaid/store/app-channel')()
     , fs                    = require('fs')
     , path                  = require('path')
     , condition             = require('./condition')
+    , websocket             = require('./webscoket.js')
 
 const queue = new Queue()
 
-const rules = new AppMemoryFileJSON('rules', [], 10000)
+const rules = [
+  {
+    "name": "Fuck Machine",
+    "id": 5781.040443098535,
+    "platform": "All platforms",
+    "conditions": [
+      {
+        "operator": ">", // see condition.js
+        "number": 0,
+        "id": 3885.785333101328
+      },
+      /*
+      {
+        "operator": "<", // see condition.js
+        "number": 0,
+        "id": 3885.785333101328
+      }
+      {
+        "operator": "==", // see condition.js
+        "number": 0,
+        "id": 3885.785333101328
+      }
+      */
+    ],
+    "commands":[
+      {
+        "clientId": "715", // Айди устройства к которому применяются это правило
+        "id": 1211.9654263488533
+      },
+      /*
+      {
+        delay: 1000,
+        id: 231.965422343
+      },
+      {
+        "clientId": "715",
+        "id": 1211.9654263488533
+      }
+      */
+    ]
+  }
+]
+
+// const rules = new AppMemoryFileJSON('rules', [], 10000)
 
 queue.executer(async (data, next, repeat) => {
   const { commands, username, message, tokenCount } = data
@@ -25,18 +69,19 @@ queue.executer(async (data, next, repeat) => {
       await sleep(parseInt(command.delay))
     }
 
-    if (command.url) {
+    if (command.clientId) {
       try {
-        const url = command.url
-                      .replace(/=\$\{username\}/gi, '='+username)
-                      .replace(/=\$\{message\}/gi, '='+message)
-                      .replace(/=\$\{tokenCount\}/gi, '='+tokenCount)
+        const clients = websocket()
 
-        await axios({
-          method: 'get',
-          url,
-          timeout: 1000 * 60 * 15
-        })
+        const client = clients.find(client => client.id === command.clientId)
+
+        if (client) {
+          const isSend = await client.send(tokenCount, username, message)
+
+          if (!isSend) {
+            isError = true
+          }
+        }
       } catch (e) {
         isError = true
       }
@@ -50,16 +95,16 @@ queue.executer(async (data, next, repeat) => {
   }
 })
 
-const httpTipRequest = async data => {
+const webscoketTipRequest = async data => {
   if (data.isEasyData && data.easyData.events.isTokens) {
     const tokenCount = data.easyData.tokenCount
         , message = data.easyData.message
         , username = data.easyData.username
 
-    const rules = rules.readInterval()
+    const _rules = rules.readInterval()
 
-    for (let i = 0; i < rules.length; i++) {
-      const rule = rules[i]
+    for (let i = 0; i < _rules.length; i++) {
+      const rule = _rules[i]
 
       const isPlatform = (rule.platform === data.extension.platform || rule.platform === 'All platforms')
 
@@ -92,10 +137,10 @@ queue.status(count => {
 AppChannel.on('connect', () => {
   AppTransportChannel.on('connect', () => {
     AppChannel.on('data', data => {
-      parser.Chaturbate(data, httpTipRequest)
-      parser.xHamsterLive(data, httpTipRequest)
-      parser.Stripchat(data, httpTipRequest)
-      parser.BongaCams(data, httpTipRequest)
+      parser.Chaturbate(data, webscoketTipRequest)
+      parser.xHamsterLive(data, webscoketTipRequest)
+      parser.Stripchat(data, webscoketTipRequest)
+      parser.BongaCams(data, webscoketTipRequest)
     })
 
     AppChannel.on('reload', () => {
