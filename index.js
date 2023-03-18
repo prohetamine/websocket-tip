@@ -101,7 +101,7 @@ const webscoketTipRequest = async data => {
         , message = data.easyData.message
         , username = data.easyData.username
 
-    const _rules = rules.readInterval()
+    const _rules = rules ///.readInterval()
 
     for (let i = 0; i < _rules.length; i++) {
       const rule = _rules[i]
